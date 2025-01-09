@@ -1,7 +1,10 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom";
+// require('dotenv').config()
 
 const Login = () => {
+
+    const websiteUrl = process.env.REACT_APP_URL;
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -12,13 +15,15 @@ const Login = () => {
         e.preventDefault();
         const user = { email, password };
 
-        fetch('http://localhost:8080/login', {
+        fetch(`${websiteUrl}/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(user)
         }).then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('userId', data.result._id);
                     navigate('/home')
                 }
                 else {
@@ -42,7 +47,7 @@ const Login = () => {
                         <input type="password" placeholder="Enter your password" required value={password} onChange={(e) => setPassword(e.target.value)} />
                         <button>Login</button>
                     </form>
-                    {error && <p style={{ color: 'red' }}>{error}</p>}  
+                    {error && <p style={{ color: 'red' }}>{error}</p>}
 
                     <p>Don't have an account? <Link to="/register">Sign up</Link></p>
                 </div>
